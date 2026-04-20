@@ -1,0 +1,43 @@
+so now i complyted the basic auth setup , 
+normal  emial and oUth login system , 
+ also created the products some apis , 
+
+so know i need to setup the auth verification by otp setup , 
+also need to complete  the products crud then ,ove into another setups  
+
+
+
+
+now the booking is simply oko ,
+ but the bookeditems listview have an problem so i need  to 
+
+setup ,
+and the cart and wishlist products images all are set !,
+
+next is do the roomsetup and others etc...
+
+
+now i setuped the celery for send mails ,
+also setuped an model for kyc and uploading into cloudnary then i ned to sertup the 
+
+integrate the ai part for that 
+         
+now the checking part simply ok,
+used easyocr for image to text ,
+numpy for url to image
+opencv for comparing etc..
+
+also added this into celery task , and email setup so that is working ,
+
+
+the pagination and filtering permisions i gived , 
+
+the redis catching is setuped for the products listing and retrive 
+
+
+the ownerdashboard setup pending iam recherthing that 
+
+
+to do after making frontend::
+now the payment is needed , razorpay installed and id settuped ,
+then the payment order creation adn  order creation needed 
