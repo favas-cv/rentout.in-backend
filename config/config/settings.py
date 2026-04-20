@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
+from decouple import config
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,10 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ib_g29r7ek$*=ax%y_@7q!sbxl%0792h@fnxn@zhvnwbeozji-'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = config("SECRET_KEY")
+DEBUG = config("DEBUG", cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -100,11 +99,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": 'rentout_db',
-        "USER": 'postgres',
-        "PASSWORD": '123456',
-        "HOST": 'localhost',
-        "PORT": '5432',
+        "NAME": config("DB_NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
+        "PORT": config("DB_PORT"),
     }
 }
 
@@ -171,19 +170,17 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL ='accounts.User'
 
-# GOOGLE_CLIENT_ID = '243384978780-uc8kr36su8e7hqdqph83mb92818ohgpl.apps.googleusercontent.com'
-GOOGLE_CLIENT_ID = "407408718192.apps.googleusercontent.com" #for playground use 
-
+ #for playground use 
+GOOGLE_CLIENT_ID = config("GOOGLE_CLIENT_ID")
 
 
 import cloudinary
 import cloudinary.uploader
 
 cloudinary.config(
-    
-    cloud_name='dp63aup8u',
-    api_key='565241249223441',
-    api_secret='4MvIsp7VuhSmDDPH0Wnm3XKbvuQ'
+    cloud_name=config("CLOUDINARY_CLOUD_NAME"),
+    api_key=config("CLOUDINARY_API_KEY"),
+    api_secret=config("CLOUDINARY_API_SECRET")
 )
 
 
@@ -217,11 +214,11 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER ='fawazmuhd0@gmail.com'
-EMAIL_HOST_PASSWORD ='ubmtifvwemybsmip'
-EMAIL_ADMIN_USER='fawazmuhd06@gmail.com'
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_ADMIN_USER = config("EMAIL_ADMIN_USER")
 # DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
-RAZORPAY_KEY_ID='rzp_test_SEkDvvj5ubBTPS'
-RAZORPAY_KEY_SECRET='PwyM81AQDG5MK7Dx4qRiRy2z'
+RAZORPAY_KEY_ID = config("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET")
