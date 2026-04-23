@@ -11,7 +11,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=User
-        fields =['email','username','password','password2']
+        fields =['email','password','password2']
+        extra_kwargs ={
+            'username':{'required':False}
+        }
+        
+        
     def validate(self,data):
         if data['password'] != data['password2']:
             raise serializers.ValidationError({'error':'password is mismatch '})
@@ -19,6 +24,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self,validated_data):
         validated_data.pop('password2')
+        
+        email = validated_data.get('email')
+        
+        username = email.split('@')[0]
+        
+        validated_data['username'] = username
+        
+        
         return User.objects.create_user(**validated_data)
     
     
@@ -85,3 +98,30 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
         fields=['username']
+        
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model =User
+        fields = ['email','is_owner','is_verified','stage']
+        
+        
+class SendOTPSerializer(serializers.Serializer):
+    email=serializers.EmailField()
+    purpose = serializers.ChoiceField(choices=['signup','password_reset'])
+    
+class VerifyOTPserializer(serializers.Serializer):
+    # email=serializers.EmailField()
+    session_ref = serializers.CharField()
+    otp = serializers.CharField(max_length =6,min_length = 6)
+    # purpose = serializers.ChoiceField(choices=['signup','password_reset'])
+    
+class PasswordResetSerializer(serializers.Serializer):
+    reset_token = serializers.CharField()
+    password1 =serializers.CharField(min_length=8)
+    password2 =serializers.CharField(min_length=8)
+    
+    def validate(self,data):
+        if data['password1'] != data['password2']:
+            raise serializers.ValidationError({'error':'password is mismatch '})
+        return data
+    

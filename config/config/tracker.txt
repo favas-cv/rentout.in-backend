@@ -35,7 +35,30 @@ the pagination and filtering permisions i gived ,
 the redis catching is setuped for the products listing and retrive 
 
 
-the ownerdashboard setup pending iam recherthing that 
+
+created the frontend by using antigravity 
+now the get requests is ok !
+then ineed to set up that and also learn fronentend 
+
+
+22-03-26
+
+toaday i setuped the rag , create ingest.py and ragengine , useed langchain , chroma , and grog 
+now the responce is coning then need to setup the model for saving 
+messages  , also that configured fastly only call when the chat api call 
+
+
+the ownerdashboard is setuped , the orders ,dash cards , and  products listed
+
+also sentuped the otp verification system ,and that working ,
+
+23-03-26
+
+also do the password reset by same otp stystem , used reset token and sessionref 
+
+
+
+
 
 
 to do after making frontend::

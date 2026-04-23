@@ -1,15 +1,22 @@
 from django.shortcuts import render
 
 # Create your views here.
-from .models import User
-from .serializers import RegisterSerializer,LoginSerializer,GoogleAuthSerializer
+from .models import OTPVerification
+from .serializers import (RegisterSerializer,LoginSerializer,
+                          GoogleAuthSerializer,UserProfileSerializer,
+                          
+                          
+                          )
+
 from rest_framework.response import Response
 from rest_framework.views  import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .tasks import send_welcome_mail,logoutmail
 from drf_yasg.utils import swagger_auto_schema
-from django.contrib.auth import authenticate
 from rest_framework.permissions import AllowAny
+    
+
+
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -18,9 +25,42 @@ class RegisterView(APIView):
         
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
+            email = serializer.validated_data['email']
+            
+            verified = OTPVerification.objects.filter(
+                email=email,is_verified=True
+            ).exists()
+            
+            if not verified:
+                return Response({'error':'Email is not verified.Please verify OTP first'},status=400)
+            
+            
             user = serializer.save()
+            
+            OTPVerification.objects.filter(email=email).delete()
+            
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token =str(refresh)
+            
             send_welcome_mail.delay(user.email)
-            return Response({'msg':'User is created'},status=201)
+            
+            response = Response({
+                'access':access_token,
+                'user':user.email,
+                'msg':'Use is registred and logged in'
+            },
+                                status=201)
+            response.set_cookie(
+                key='refresh_token',
+                value=refresh_token,
+                httponly=True,
+                secure=False,
+                samesite='None',
+                path='/'
+            )
+            
+            return response
         
         return Response(serializer.errors,status=400)
     
@@ -39,7 +79,7 @@ class LoginView(APIView):
                 'access':access_token,
                 
                 'user':user.email
-            },status=201)
+            },status=200)
             
             response.set_cookie(
                 key='refresh_token',
@@ -122,3 +162,14 @@ class LogoutView(APIView):
             return Response({'error':'you are not logged'})
         except Exception as e:
             return Response({'error':str(e)},status=400)
+
+class ManageProfileView(APIView):
+    
+    def get(self,request):
+        
+        
+        user =request.user
+        
+        serializer = UserProfileSerializer(user)
+        
+        return Response(serializer.data)

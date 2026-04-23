@@ -1,12 +1,13 @@
 from django.db import models
 from accounts.models import User
+from utils.models  import TimeStampedModel
 
 
-class Category(models.Model):
+class Category(TimeStampedModel):
     category=models.CharField(max_length=25,unique=True)
 
  
-class Product(models.Model):
+class Product(TimeStampedModel):
     owner = models.ForeignKey(User, on_delete=models.CASCADE,db_index=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE,db_index=True)
     

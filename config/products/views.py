@@ -4,7 +4,7 @@ from .serializers import CategorySerializer,ProductSerializer
 from .pagination import CustomPagination
 # from .utils import invalidate_product_cache
 
-from rest_framework.generics import CreateAPIView,ListAPIView,RetrieveAPIView
+from rest_framework.generics import CreateAPIView,ListAPIView,RetrieveAPIView,ListCreateAPIView
 
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
@@ -14,6 +14,8 @@ from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 from django.core.cache import cache
 from rest_framework.response import Response
+from .utils import ProductFilter
+from rest_framework.filters import SearchFilter,OrderingFilter
 
 
 # Normal users
@@ -24,8 +26,18 @@ class ProductView(ListAPIView):
     serializer_class=ProductSerializer
     queryset=Product.objects.select_related('owner','category').all()
     pagination_class = CustomPagination
-    filter_backends=[DjangoFilterBackend]
-    filterset_fields= ['category','price_per_day','title']
+    filter_backends=[DjangoFilterBackend,
+                     SearchFilter,
+                     OrderingFilter
+                     
+                     ]
+    # filterset_fields= ['category_name','price_per_day','title']
+    filterset_class = ProductFilter
+    search_fields = ['title']
+    ordering_fields = ['price_per_day','brand_name']
+    ordering = ['brand_name']
+    
+    
     
     def list(self,request,*args,**kwargs):
         version = cache.get('product_version',1)
@@ -80,18 +92,27 @@ class ProductDetailView(RetrieveAPIView):
     
 # Product Owners
 
-class OwnerProductView(ModelViewSet):
-    serializer_class = ProductSerializer
-    pagination_class = CustomPagination
-    filter_backends=[DjangoFilterBackend]
-    filterset_fields= ['category','price_per_day','title']
+# class OwnerProductView(ModelViewSet):
+#     serializer_class = ProductSerializer
+#     pagination_class = CustomPagination
 
-    def get_queryset(self):
-        return Product.objects.select_related('owner', 'category').filter(owner=self.request.user)
+#     filter_backends=[DjangoFilterBackend,
+#                      SearchFilter,
+#                      OrderingFilter
+                     
+#                      ]
+#     # filterset_fields= ['category_name','price_per_day','title']
+#     filterset_class = ProductFilter
+#     search_fields = ['title']
+#     ordering_fields = ['price_per_day','brand_name']
+#     ordering = ['brand_name']
+ 
+#     def get_queryset(self):
+#         return Product.objects.select_related('owner', 'category').filter(owner=self.request.user)
     
     
 # Admin only 
 
-class CategoryView(CreateAPIView):
+class CategoryView(ListCreateAPIView):
     serializer_class=CategorySerializer
     queryset=Category.objects.all()

@@ -16,20 +16,28 @@ from address.models import Address
 from datetime import datetime,timedelta
 
 
+
 class CheckoutCartView(APIView):
-    
+
     def get(self, request):
-        cart_items = Cart.objects.filter(user=request.user).select_related('product')
+        cart_items = Cart.objects.filter(user=request.user)\
+            .select_related('product')\
+            .prefetch_related('product__images')  # 🔥 important
 
         data = []
 
         for item in cart_items:
+            images = item.product.images.all()
+
+            first_image = images[0].image_url if images else None
+
             data.append({
                 "cart_id": item.id,
                 "product_name": item.product.title,
                 "price_per_day": item.product.price_per_day,
                 "deposit": item.product.security_deposit,
-                "quantity": item.quantity
+                "quantity": item.quantity,
+                "image": first_image  
             })
 
         return Response(data)
@@ -194,87 +202,6 @@ class CreateBookingReservationView(APIView):
 
 
 
- 
-
-
-# class CreateRentalView(APIView):
-    
-#     @transaction.atomic()
-#     def post(self,request):
-        
-#         user=request.user
-#         address_id=request.data.get('address_id')
-#         address = Address.objects.filter(id=address_id).first()
-        
-        
-#         if not address_id or not address:
-#             return Response({'error':'address not selected or found '})
-        
-        
-#         cart_items=Cart.objects.filter(user=user,
-#                                        start_date__isnull=False,
-#                                        end_date__isnull=False
-                                       
-                                       
-#                                        ).select_related('product')
-        
-#         if not cart_items:
-#             return Response({'error':'the Cart was empty'})
-        
-#         grand_total_rent =0
-#         grand_total_deposit =0
-        
-#         booking =Booking.objects.create(
-#             user=user,
-#             address=address
-            
-#         ) 
-        
-#         for item in cart_items:
-#             start = item.start_date
-#             end=item.end_date
-#             total_days=(end-start).days
-            
-            
-            
-#             item_rent_total=item.product.price_per_day * total_days * item.quantity
-            
-            
-#             item_total_deposit=item.product.security_deposit*item.quantity
-            
-#             grand_total_deposit += item_total_deposit
-#             grand_total_rent +=item_rent_total
-            
-#             if Booked_items.objects.filter(
-#                 product_id=item.product.id,
-#                 start_date__lt=end,
-#                 end_date__gt=start
-#             ).exists():
-#                 return Response({'error':'the item is not availble for this days '})
-            
-            
-#             Booked_items.objects.create( 
-#                 booking=booking,
-#                 product=item.product,
-#                 start_date=item.start_date,
-#                 end_date=item.end_date,
-#                 booked_time_price=item.product.price_per_day,
-#                 booked_time_deposit=item.product.security_deposit,
-#                 quantity=item.quantity
-#             )
-            
-#         booking.total_deposit_money=grand_total_deposit
-#         booking.total_rent_money=grand_total_rent
-#         booking.save()
-        
-#         cart_items.delete()
-#         booking_successfull.delay(user.email,user.username)
-#         return Response({
-#             'msg':'booking successfull',
-#             'booking_id':booking.id,
-#             'total payable':grand_total_deposit+grand_total_rent
-#         },status=201)
-            
     
     
 from rest_framework.generics import ListAPIView,RetrieveAPIView

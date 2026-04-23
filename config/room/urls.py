@@ -3,7 +3,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 router =DefaultRouter()
-router.register('room',RoomManageView,basename='room-manage')
+router.register('',RoomManageView,basename='room-manage')
 
 
 urlpatterns = [

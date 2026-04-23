@@ -109,8 +109,21 @@ class CartDecreaseView(APIView):
         cart_item.save()
         return Response({'quanitity':cart_item.quantity})
             
-        
-            
+
+class ClearCartAPIView(APIView):
+
+    def delete(self, request):
+        user = request.user
+
+        deleted_count, _ = Cart.objects.filter(user=user).delete()
+
+        return Response(
+            {
+                "message": "Cart cleared successfully",
+                "deleted_items": deleted_count
+            },
+            status=200
+        )    
         
             
 class WishlistApiView(APIView):

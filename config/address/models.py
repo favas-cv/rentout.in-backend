@@ -1,8 +1,8 @@
 from django.db import models
 from accounts.models import User
+from utils.models import TimeStampedModel
 
-
-class Address(models.Model):
+class Address(TimeStampedModel):
     
     user =models.ForeignKey(User,on_delete=models.CASCADE)
     house_name=models.CharField(max_length=233,null=True,blank=True)

@@ -1,11 +1,11 @@
 from django.db import models
 from products.models import Product
 from accounts.models import  User
+from utils.models import TimeStampedModel
 
 
 
-
-class Room(models.Model):
+class Room(TimeStampedModel):
     
     title = models.CharField(max_length=100)
     user=models.ForeignKey(User,on_delete=models.CASCADE)

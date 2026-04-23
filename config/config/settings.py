@@ -40,8 +40,9 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_yasg',
     'utils',
-    'kyc',
-    'paymentsetup',
+    # 'kyc',
+    'chatbot',
+    'paymentsetup', 
     'rest_framework',
     'accounts',
     'address',
@@ -222,3 +223,8 @@ EMAIL_ADMIN_USER = config("EMAIL_ADMIN_USER")
 
 RAZORPAY_KEY_ID = config("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET")
+
+
+#chatbot
+
+GROQ_API_KEY=config('GROQ_API_KEY')

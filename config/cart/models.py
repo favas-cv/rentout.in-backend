@@ -2,7 +2,7 @@ from django.db import models
 from products.models import Product
 from accounts.models import User
 from room.models import Room
-
+from utils.models import TimeStampedModel
     
     
 class Wishlist(models.Model):
@@ -13,7 +13,7 @@ class Wishlist(models.Model):
         unique_together=('user','product')
         
         
-class Cart(models.Model):
+class Cart(TimeStampedModel):
     user=models.ForeignKey(User,on_delete=models.CASCADE) 
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
     quantity =models.IntegerField(default=1)
@@ -23,7 +23,7 @@ class Cart(models.Model):
 
     class Meta:
         unique_together=('user','product')
-        ordering=['id']
+        ordering=['created_at']
         
         
 

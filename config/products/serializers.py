@@ -41,7 +41,11 @@ class ProductSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all()
     )
     
-    # category_details = CategorySerializer(source='category', read_only=True)
+    category_name = serializers.CharField(
+        source='category.category',
+        read_only=True
+    )
+
     owner_details = UserSerializer(source='owner', read_only=True)
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
     

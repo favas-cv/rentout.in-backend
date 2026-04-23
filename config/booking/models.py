@@ -2,9 +2,9 @@ from django.db import models
 from accounts.models import User
 from products.models import Product
 from address.models import Address
- 
+from utils.models import TimeStampedModel
 
-class Reservation(models.Model):
+class Reservation(TimeStampedModel):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     product = models.ForeignKey(Product,on_delete=models.CASCADE)
     start_date = models.DateField()
@@ -23,7 +23,7 @@ class Reservation(models.Model):
 
 
 
-class Booking(models.Model):
+class Booking(TimeStampedModel):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     address=models.ForeignKey(Address,on_delete=models.CASCADE)
     total_rent_money=models.FloatField(default=0)
@@ -36,7 +36,7 @@ class Booking(models.Model):
     deposit_status=models.CharField(default='pending')
      
      
-class Booked_items(models.Model):
+class Booked_items(TimeStampedModel):
     booking=models.ForeignKey(Booking,on_delete=models.CASCADE,related_name='items')
     product=models.ForeignKey(Product,on_delete=models.DO_NOTHING)
     
