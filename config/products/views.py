@@ -51,7 +51,7 @@ class ProductView(ListAPIView):
         if data:
             print('cache hit')
             return Response(data)
-        print('redis cache hit ')
+        print('redis cache miss ')
         
         responce= super().list(request,*args,**kwargs)
         

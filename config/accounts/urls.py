@@ -1,7 +1,7 @@
 from .views import (LoginView,RegisterView,
                     GoogleLoginView,LogoutView,
-                    RefreshView,ManageProfileView,
-                    
+                    RefreshView,
+                    ProfileView
                     
                     )
 from .otp import VerifyOTPVIew,SendOTPView
@@ -17,5 +17,5 @@ urlpatterns = [
     path('google/',GoogleLoginView.as_view()),
     path('refresh/',RefreshView.as_view()),
     path('logout/',LogoutView.as_view()),
-    path('me/',ManageProfileView.as_view()),
+    path('me/',ProfileView.as_view()),
 ]

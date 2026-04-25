@@ -13,4 +13,4 @@ def get_embeddings():
             model_kwargs={"device": "cpu"}
         )
 
-    return _embeddings
+    return _embeddings 

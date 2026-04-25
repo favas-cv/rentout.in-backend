@@ -44,7 +44,7 @@ class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(
         source='category.category',
         read_only=True
-    )
+    ) 
 
     owner_details = UserSerializer(source='owner', read_only=True)
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())

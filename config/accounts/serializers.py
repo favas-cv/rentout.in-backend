@@ -16,6 +16,11 @@ class RegisterSerializer(serializers.ModelSerializer):
             'username':{'required':False}
         }
         
+    def validate_password(self,value):
+        
+        if len(value) < 8:
+            raise serializers.ValidationError({'error':'The password must be 8'})
+        return value
         
     def validate(self,data):
         if data['password'] != data['password2']:
@@ -39,6 +44,10 @@ class LoginSerializer(serializers.Serializer):
     email=serializers.EmailField()
     password =serializers.CharField(write_only=True)
     
+    def validate_password(self,value):
+        if len(value) < 8:
+            raise serializers.ValidationError({'error':'password must be min 8 '})
+        return value
     def validate(self,data):
         email=data.get('email')
         password=data.get('password')
@@ -124,4 +133,37 @@ class PasswordResetSerializer(serializers.Serializer):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError({'error':'password is mismatch '})
         return data
+   
+
+    
+class ProfileSerializer(serializers.ModelSerializer):
+    
+    profile_pic_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model= User
+        fields =['first_name','last_name',
+                 
+                 'email','is_owner','is_verified','stage',
+                 'profile_pic','profile_pic_url',
+                 
+                 
+                 ]
+        
+        extra_kwargs ={
+            'email':{'read_only':True},
+            'is_owner':{'read_only':True},
+            'is_verified':{'read_only':True},
+            'stage':{'read_only':True},
+            'profile_pic':{'write_only':True}
+            
+        }
+        
+        
+    def get_profile_pic_url(self,obj):
+        if  obj.profile_pic:
+            return obj.profile_pic.url
+        return None
+        
+        
     

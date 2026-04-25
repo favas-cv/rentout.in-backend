@@ -56,6 +56,9 @@ also sentuped the otp verification system ,and that working ,
 
 also do the password reset by same otp stystem , used reset token and sessionref 
 
+the manage profile is finshed , profile pic ulpoad and editr profile is ok  
+
+
 
 
 

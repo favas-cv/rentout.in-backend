@@ -14,4 +14,4 @@ def get_vectorstore():
             embedding_function=get_embeddings()  # lazy call
         )
 
-    return _vectorstore
+    return _vectorstore 

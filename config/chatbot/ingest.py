@@ -98,7 +98,7 @@ def ingest_products():
         print("⚠️ DB already exists, skipping ingestion")
         return
     
-    embeddings = get_embeddings()
+    embeddings = get_embeddings() 
 
     # ---- WHY: Chroma ----
     # ChromaDB saves vectors to disk at ./chroma_db/

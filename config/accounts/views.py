@@ -3,7 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 from .models import OTPVerification
 from .serializers import (RegisterSerializer,LoginSerializer,
-                          GoogleAuthSerializer,UserProfileSerializer,
+                          GoogleAuthSerializer,
+                          ProfileSerializer
                           
                           
                           )
@@ -14,6 +15,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .tasks import send_welcome_mail,logoutmail
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
+
+from rest_framework.parsers import MultiPartParser,FormParser
     
 
 
@@ -163,13 +166,29 @@ class LogoutView(APIView):
         except Exception as e:
             return Response({'error':str(e)},status=400)
 
-class ManageProfileView(APIView):
+
+class ProfileView(APIView):
+    parser_classes =[MultiPartParser,FormParser]
+    
     
     def get(self,request):
         
+        user = request.user
         
-        user =request.user
-        
-        serializer = UserProfileSerializer(user)
-        
+        serializer = ProfileSerializer(user)
         return Response(serializer.data)
+    
+    def patch(self,request):
+        user =request.user
+        serializer = ProfileSerializer(user,
+            data=request.data,
+            partial=True
+        )
+        
+        if serializer.is_valid():
+            serializer.save()
+            
+            return Response({'msg':'profile updated'})
+        return Response(serializer.errors)
+    
+        

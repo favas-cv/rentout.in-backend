@@ -1,11 +1,10 @@
 from django.db import models
 
-# Create your models here.
 
 from django.contrib.auth.models import AbstractUser
 
 from django.utils import timezone
-import random
+from cloudinary.models import CloudinaryField
 
 class User(AbstractUser):
     email=models.EmailField(unique=True)
@@ -13,18 +12,13 @@ class User(AbstractUser):
     is_verified=models.BooleanField(default=True)
     kyc_status=models.CharField(default='verified')
     stage=models.CharField(default='basic')
+    profile_pic = CloudinaryField('profile_pic',folder='rentout/profile_pics',blank=True,null=True)
     
     USERNAME_FIELD ='email'
     REQUIRED_FIELDS =['username']
-    
+   
+   
 
-# class Verification(models.Model):
-#     user = models.OneToOneField(User,on_delete=models.CASCADE)
-    
-#     document = models.ImageField()
-#     selfie = models.ImageField()
-    
-#     status = models.CharField()
 
 
 class OTPVerification(models.Model):
@@ -47,7 +41,7 @@ class OTPVerification(models.Model):
     
     def __str__(self):
         return f"{self.email } - {self.purpose}"
-    
+     
     
 
     
