@@ -1,32 +1,61 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Environment Variables
+.env
+.env.*
 
 # Django
 *.log
 db.sqlite3
 media/
-
-# Virtual environment
-venv/
-env/
-ENV/
-
-# Environment variables
-.env
-
-# Static files
 staticfiles/
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
 
 # VS Code
 .vscode/
 
-# OS files
+# OS Files
 .DS_Store
 Thumbs.db
 
-# migrations (optional)
+# Celery
+celerybeat-schedule
+
+# Docker
+*.pid
+
+# Firebase / Secrets
+config/config/firebase/*.json
+
+# Chroma DB / Vector DB
+chroma_db/
+
+# Cache
+.cache/
+
+# Migrations (optional)
 **/migrations/*.py
 !**/migrations/__init__.py
+
+# Node
+node_modules/
+
+# Build files
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp
