@@ -11,9 +11,23 @@ def test_task():
     
 @shared_task
 def send_welcome_mail(email):
+    
+    sub='Furnish your space without the commitment'
+    
+    msg = """
+    Thank you for registering can now start browsing listings or list your own items for rent.
+
+
+    Regards,
+
+
+    The RentOut Team
+    
+    
+    """
+    
     send_mail(
-        'welcome to renout.in',
-        'thankyou for registeiring',
+        sub,msg,
         settings.EMAIL_HOST_USER,
         [email],
         fail_silently=False

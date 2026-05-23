@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_yasg',
     'utils',
-    # 'kyc',
+    'kyc',
     'chat',
     'chatbot',
     'paymentsetup', 
@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'room',
     'booking',
     'ownerdashboard',
+    'admindashboard',
+    'notification',
     'rest_framework_simplejwt.token_blacklist',
 ]
 
@@ -71,10 +73,12 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://paper-copious-chamber.ngrok-free.dev",
+    "https://unbraided-strep-wobbly.ngrok-free.dev"
 ]
 
 # Temporary clean slate for debugging
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'config.urls'
@@ -166,6 +170,7 @@ REST_FRAMEWORK = {
     ),
         'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+        # 'accounts.permissions.IsActiveUsers',
     ],
 
     'DEFAULT_FILTER_BACKENDS': [
@@ -177,9 +182,11 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'BLACKLIST_AFTER_ROTATION':False,
+    "ROTATE_REFRESH_TOKENS": False,
 }
 
 AUTH_USER_MODEL ='accounts.User'
@@ -220,7 +227,7 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-# EMAIL CONFIG
+# EMAIL CONFIG 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
@@ -241,3 +248,7 @@ RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET")
 #chatbot
 
 GROQ_API_KEY=config('GROQ_API_KEY')
+AI_SERVICE_URL = "http://127.0.0.1:8001"
+
+
+from .firebase import *

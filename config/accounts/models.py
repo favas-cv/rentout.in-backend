@@ -8,11 +8,13 @@ from cloudinary.models import CloudinaryField
 
 class User(AbstractUser):
     email=models.EmailField(unique=True)
-    is_owner=models.BooleanField(default=True)
-    is_verified=models.BooleanField(default=True)
-    kyc_status=models.CharField(default='verified')
+    is_owner=models.BooleanField(default=False)
+    is_verified=models.BooleanField(default=False)
+    kyc_status=models.CharField(default='PENDING')
     stage=models.CharField(default='basic')
     profile_pic = CloudinaryField('profile_pic',folder='rentout/profile_pics',blank=True,null=True)
+    
+    is_live = models.BooleanField(default=True)
     
     USERNAME_FIELD ='email'
     REQUIRED_FIELDS =['username']

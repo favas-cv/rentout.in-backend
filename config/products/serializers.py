@@ -8,15 +8,15 @@ class CategorySerializer(serializers.ModelSerializer):
     
     class Meta: 
         model=Category
-        fields=['category']
+        fields=['id','category']
     
     
     
     
 class ProductImageSerializer(serializers.ModelSerializer):
-    class Meta:
+    class Meta:  
         model=ProductImage
-        fields =['product','image_url']
+        fields =['product','image_url','model3d_url']
 
  
 
@@ -29,7 +29,10 @@ class ProductSerializer(serializers.ModelSerializer):
         required=False
     )
     
-    
+    model_3d= serializers.FileField(
+        write_only=True,
+        required=False
+    ) 
     
     product_image =ProductImageSerializer(
         many=True,
@@ -47,6 +50,7 @@ class ProductSerializer(serializers.ModelSerializer):
     ) 
 
     owner_details = UserSerializer(source='owner', read_only=True)
+    owner_id = serializers.IntegerField(source='owner.id',read_only=True)
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
     
     class Meta:
@@ -56,6 +60,8 @@ class ProductSerializer(serializers.ModelSerializer):
     
     def create(self,validated_data):
         image_files=validated_data.pop('images',[])
+        model_3d = validated_data.pop('model_3d',None)
+        
         product = Product.objects.create(**validated_data)
         
         for image in image_files:
@@ -68,7 +74,73 @@ class ProductSerializer(serializers.ModelSerializer):
                 product=product,
                 image_url=upload.get('secure_url')
             )
+        
+        if model_3d:
+            model_upload = cloudinary.uploader.upload(
+                model_3d,
+                resource_type='raw',
+                folder ='rentout3Dmodels'
+            )
+            
+            ProductImage.objects.create(
+                product=product,
+                model3d_url = model_upload.get(
+                    'secure_url'
+                )
+            )
+        
+        # invalidate_product_cache()
         return product
+    
+    def update(self, instance, validated_data):
+
+        image_files = validated_data.pop(
+            'images',
+            []
+        )
+
+        model_3d = validated_data.pop(
+            'model_3d',
+            None
+        )
+
+        # update normal fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+
+        # upload new images
+        for image in image_files:
+
+            upload = cloudinary.uploader.upload(
+                image,
+                folder='rentoutProducts'
+            )
+
+            ProductImage.objects.create(
+                product=instance,
+                image_url=upload.get('secure_url')
+            )
+
+        # upload new 3d model
+        if model_3d:
+
+            model_upload = cloudinary.uploader.upload(
+                model_3d,
+                resource_type='raw',
+                folder='rentout3Dmodels'
+            )
+
+            ProductImage.objects.create(
+                product=instance,
+                model3d_url=model_upload.get(
+                    'secure_url'
+                )
+            )
+
+        # invalidate_product_cache()
+        return instance
     
         
     def validate_title(self,value):

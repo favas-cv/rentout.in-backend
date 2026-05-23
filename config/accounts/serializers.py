@@ -52,6 +52,14 @@ class LoginSerializer(serializers.Serializer):
         email=data.get('email')
         password=data.get('password')
         
+        user_obj = User.objects.filter(email=email).first()
+        
+        # if user_obj and not user_obj.is_live:
+        #     raise serializers.ValidationError({
+        #         'error':'Your account has been blocked. please contact support care'
+        #     })
+            
+        
         user= authenticate(username=email,password=password)
         
         if not  user:
@@ -106,7 +114,7 @@ class GoogleAuthSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        fields=['username']
+        fields=['id','username']
         
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -142,7 +150,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model= User
-        fields =['first_name','last_name',
+        fields =['id','first_name','last_name',
                  
                  'email','is_owner','is_verified','stage',
                  'profile_pic','profile_pic_url',
@@ -166,4 +174,5 @@ class ProfileSerializer(serializers.ModelSerializer):
         return None
         
         
+    
     

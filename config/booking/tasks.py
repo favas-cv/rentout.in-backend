@@ -21,6 +21,7 @@ def booking_successfull(email,username):
 
 @shared_task
 def delete_expired_reservations():
+    print("🔥 TASK EXECUTED 🔥")
     deleted_count, _ = Reservation.objects.filter(
         expires_at__lt=timezone.now(),
         is_paid=False

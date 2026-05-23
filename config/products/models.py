@@ -26,16 +26,26 @@ class Product(TimeStampedModel):
     offer_price = models.BigIntegerField(null=True, blank=True)
     
     is_active = models.BooleanField(default=True, null=True, blank=True)
+    is_featured = models.BooleanField(default=False)
+    is_trending = models.BooleanField(default=False)
+    is_seasonal = models.BooleanField(default=False)
     
     class Meta:
         ordering = ['-price_per_day']
-
+ 
 class ProductImage(models.Model):
-     product =models.ForeignKey(
+    # FILE_TYPES = (
+    # ("image", "Image"),
+    # ("model", "3D Model"),
+    # )
+    
+    
+    product =models.ForeignKey(
          Product,
          on_delete=models.CASCADE,
          related_name='images'
      )
      
-     image_url =models.URLField()
+    image_url =models.URLField()
+    model3d_url = models.URLField(null=True,blank=True)
       

@@ -1,9 +1,13 @@
 from rest_framework import serializers
 from .models import KycDocs
 import cloudinary.uploader
-from .tasks import call_kyc_verification
+# from .tasks import call_kyc_verification
 
 class KycSerializer(serializers.ModelSerializer):
+    
+    username=serializers.CharField(source ='user.username',read_only =True)
+    email=serializers.CharField(source ='user.email',read_only =True)
+    
     class Meta:
         model =KycDocs
         fields='__all__'
@@ -18,7 +22,7 @@ class KycDocsSerializer(serializers.ModelSerializer):
 
 
     class Meta:
-        model = KycDocs 
+        model = KycDocs  
         fields = '__all__'
 
     def create(self, validated_data):
@@ -47,3 +51,4 @@ class KycDocsSerializer(serializers.ModelSerializer):
         
 
         return docs
+    

@@ -26,8 +26,10 @@ urlpatterns = [
     path('api/room/',include('room.urls')),
     path('api/address/',include('address.urls')),
     path('api/owner/',include('ownerdashboard.urls')),
-    # path('api/kyc/',include('kyc.urls')),
+    path('api/kyc/',include('kyc.urls')),
     path('api/chatbot/',include('chatbot.urls')),
     path('api/chat/',include('chat.urls')),
+    path('api/notifications/',include('notification.urls')),
+    path('api/admin/',include('admindashboard.urls')),
     path('swagger/',schema_view.with_ui('swagger',cache_timeout=0),name='swagger-ui'),
 ]

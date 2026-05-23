@@ -10,9 +10,11 @@ from rest_framework.response import Response
 
 
 from rest_framework.generics import ListCreateAPIView
-
+from accounts.permissions import IsActiveUsers
 
 class CartApiView(APIView):
+    permission_classes =[IsActiveUsers]
+    
     
     def get(self,request):
         
@@ -22,10 +24,35 @@ class CartApiView(APIView):
     
     def post(self, request):
         product_id = request.data.get('product_id')
-
-        if not product_id:
-            return Response({'error':'the product is not avialibale '})
+        user = request.user
         
+        
+        if not product_id:
+            return Response({'error':'the product is not available '},status=400)
+        
+        
+        
+        product = Product.objects.filter(id= product_id).select_related('owner').first()
+        if not  product:
+            return Response({'error':'product is not found'},status=404)
+        
+        if product.owner == user:
+            return Response({'error':'this is your own product !'},status=400)
+        
+        if not product.is_active:
+            
+            return Response({
+                "error":"Product is unavailble"
+            },status=400)
+        
+        if not product.owner.is_live:
+            return Response({
+                "error":"product owner is unavailable"
+            },status=400)
+            
+            
+
+
 
         cart_item, created = Cart.objects.get_or_create(
             user=request.user, 
@@ -35,14 +62,16 @@ class CartApiView(APIView):
         )
 
         if not created:
-            return Response({'error': 'Already in cart'})
+            return Response({'error': 'Already in cart'},status=400)
 
-        return Response({'msg': 'Added to cart'})
+        return Response({'msg': 'Added to cart'},status=200)
     
 
         
    
 class CartProductDetailView(APIView):
+    permission_classes =[IsActiveUsers]
+    
     
     def get_object(self,request,pk):
         return Cart.objects.filter(id=pk,user=request.user).first()
@@ -80,6 +109,8 @@ class CartProductDetailView(APIView):
         
         
 class CartIncreaseView(APIView):
+    permission_classes =[IsActiveUsers]
+    
     def get_object(self,request,pk):
         return Cart.objects.filter(id=pk,user=request.user).first()
     
@@ -94,6 +125,8 @@ class CartIncreaseView(APIView):
             
         
 class CartDecreaseView(APIView):
+    permission_classes =[IsActiveUsers]
+    
     def get_object(self,request,pk):
         return Cart.objects.filter(id=pk,user=request.user).first()
     
@@ -111,6 +144,8 @@ class CartDecreaseView(APIView):
             
 
 class ClearCartAPIView(APIView):
+    permission_classes =[IsActiveUsers]
+    
 
     def delete(self, request):
         user = request.user
@@ -127,6 +162,8 @@ class ClearCartAPIView(APIView):
         
             
 class WishlistApiView(APIView):
+    permission_classes =[IsActiveUsers]
+    
 
     def get(self, request):
         wishlist_items = Wishlist.objects.filter(user=request.user)
@@ -138,6 +175,8 @@ class WishlistApiView(APIView):
 
         if not product_id:
             return Response({"msg": "Product ID required"}, status=400)
+        
+        
 
         wishlist_item, created = Wishlist.objects.get_or_create(
             user=request.user,
@@ -151,13 +190,17 @@ class WishlistApiView(APIView):
 
     def delete(self, request):
         product_id = request.data.get("product_id")
+        if not product_id:
+            return Response({"msg": "Product ID required"}, status=400)
 
-        deleted, _ = Wishlist.objects.filter(
+        product = Wishlist.objects.filter(
             user=request.user,
             product_id=product_id 
-        ).delete()
+        )
 
-        if deleted == 0:
+        if not product:
             return Response({"msg": "Item not found"}, status=404)
+        
+        product.delete()
         
         return Response({'msg':'the item was deleted '})

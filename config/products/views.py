@@ -23,19 +23,24 @@ class ProductView(ListAPIView):
     
      
     permission_classes = [AllowAny]
+    authentication_classes =[]
+    
     serializer_class=ProductSerializer
-    queryset=Product.objects.select_related('owner','category').all()
     pagination_class = CustomPagination
     filter_backends=[DjangoFilterBackend,
                      SearchFilter,
                      OrderingFilter
                      
                      ]
-    # filterset_fields= ['category_name','price_per_day','title']
     filterset_class = ProductFilter
-    search_fields = ['title']
+    search_fields = ['title','locality']
     ordering_fields = ['price_per_day','brand_name']
     ordering = ['brand_name']
+    
+    def get_queryset(self):
+        return  Product.objects.select_related('owner','category').filter(is_active = True,owner__is_live=True)
+         
+    
     
     
     
@@ -114,5 +119,8 @@ class ProductDetailView(RetrieveAPIView):
 # Admin only 
 
 class CategoryView(ListCreateAPIView):
+    
+    
     serializer_class=CategorySerializer
     queryset=Category.objects.all()
+    pagination_class =None

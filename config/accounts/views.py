@@ -59,7 +59,7 @@ class RegisterView(APIView):
                 value=refresh_token,
                 httponly=True,
                 secure=False,
-                samesite='None',
+                samesite='Lax',
                 path='/'
             )
             
@@ -81,7 +81,13 @@ class LoginView(APIView):
             response = Response({
                 'access':access_token,
                 
-                'user':user.email
+                'user':{
+                    'id':user.id,
+                    'username':user.username,
+                    'email':user.email,
+                    'is_staff':user.is_staff,
+                    'is_live':user.is_live
+                }
             },status=200)
             
             response.set_cookie(
@@ -89,7 +95,7 @@ class LoginView(APIView):
                 value=refresh_token,
                 httponly=True,
                 secure=False,
-                samesite='None',
+                samesite='Lax',
                 path='/'
             )
             return response
@@ -115,7 +121,8 @@ class GoogleLoginView(APIView):
 
             response= Response({
                 "access": access_token,
-                "user":user.username
+                "user":user.username,
+                "is_staff":user.is_staff
                 
             },status=201)
             response.set_cookie(
@@ -123,7 +130,7 @@ class GoogleLoginView(APIView):
                 value=refresh_token,
                 httponly=True,
                 secure=False,
-                samesite='None',
+                samesite='Lax',
                 path='/'
             )
             return response
@@ -133,41 +140,102 @@ class GoogleLoginView(APIView):
      
      
      
-     
+from rest_framework.permissions import AllowAny
 class RefreshView(APIView):
-    
-    def post(self,request):
-        refresh_token=request.COOKIES.get('refresh_token')
-        print(refresh_token)
-        
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+
+        refresh_token = request.COOKIES.get('refresh_token')
+
         if not refresh_token:
             return Response(
-                {'error':'session expired please log again'}
-            ,status=401)
-        refresh =RefreshToken(refresh_token)
-        new_access=str(refresh.access_token)
-        return Response({'access':new_access})
-    
-class LogoutView(APIView):
-    def post(self,request):
+                {'error': 'Session expired please login again'},
+                status=401
+            )
+
         try:
-            user_email = request.user.email if request.user.is_authenticated else None
-            refresh_token = request.COOKIES.get('refresh_token')
-            if refresh_token:
-                token = RefreshToken(refresh_token)
-                token.blacklist()
-                respose = Response({'msg':'logout sucessful'})
-                respose.delete_cookie('refresh_token')
-                if user_email:
-                    
-                    logoutmail.delay(request.user.email)
-                return respose
-            return Response({'error':'you are not logged'})
+
+            refresh = RefreshToken(refresh_token)
+
+            new_access = str(refresh.access_token)
+
+            # IMPORTANT
+            new_refresh = str(refresh)
+
+            response = Response({
+                'access': new_access
+            })
+
+            # UPDATE COOKIE
+            response.set_cookie(
+                key='refresh_token',
+                value=new_refresh,
+                httponly=True,
+                secure=False,
+                samesite='Lax',
+                path='/'
+            )
+
+            return response
+
         except Exception as e:
-            return Response({'error':str(e)},status=400)
+            print(e)
+
+            return Response(
+                {'error': str(e)},
+                status=401
+            )        
+        
 
 
+class LogoutView(APIView):
+
+    permission_classes = [AllowAny]
+    authentication_classes =[]
+
+    def post(self, request):
+
+        try:
+
+            refresh_token = request.COOKIES.get('refresh_token')
+
+            response = Response(
+                {'msg': 'Logout successful'},
+                status=200
+            )
+
+            if refresh_token:
+
+                try:
+                    token = RefreshToken(refresh_token)
+                    token.blacklist()
+
+                except Exception:
+                    pass
+
+            response.delete_cookie('refresh_token')
+
+            return response
+
+        except Exception:
+
+            response = Response(
+                {'msg': 'Logout successful'},
+                status=200
+            )
+
+            response.delete_cookie('refresh_token')
+
+            return response
+        
+        
+        
+        
+        
 class ProfileView(APIView):
+    
     parser_classes =[MultiPartParser,FormParser]
     
     

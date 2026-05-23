@@ -17,12 +17,9 @@ class AddDocsView(CreateAPIView):
         return {'request': self.request}
     
     
-class ListDocsView(ListAPIView):
+class ListDocsView(ListAPIView): 
     serializer_class=KycSerializer
     
     def get_queryset(self):
         return KycDocs.objects.filter(user=self.request.user)
     
-
-
-     

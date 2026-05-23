@@ -29,6 +29,9 @@ from channels.db import database_sync_to_async
 from .models import ChatRoom, Message
 from channels.db import database_sync_to_async
 from accounts.models import User
+from notification.services import create_notification
+from django.utils import timezone
+
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -73,41 +76,104 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         
     
-    async def receive(self, text_data): # when we send message
+    async def receive(self, text_data):
+
         data = json.loads(text_data)
-        message = data['message']
-        
-        # user = self.scope.get('user') #for real user
-        
-        # user = await self.get_test_user()
+
+        event_type = data.get('type', 'message')
+
         user = self.user
-        
-        # savemesg
-        
-        #saved_message =await self.save_message(user,self.room_id,message) #for real now tseting commented
-        saved_message = await self.save_message(user,self.room_id,message)
-        
-        # sendtogroup
-        
-        await self.channel_layer.group_send( # broadast to every phonein group via redis
-            self.room_group_name,{
-                'type':'chat_message', # delivery boy like , it will call in evry consumer
-                'message':message,
-                'sender':user.username if user else 'anonymus',
-                'timestamp':str(saved_message.timestamp),
-                'msg_id':saved_message.id,
-                
-                
+
+        # ---------------- SEEN EVENT ----------------
+
+        if event_type == 'seen':
+
+            message_id = data.get('message_id')
+
+            if not message_id:
+                return
+
+            await self.mark_message_seen(message_id)
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'message_seen',
+                    'message_id': message_id
+                }
+            )
+
+            return
+
+        # ---------------- NORMAL MESSAGE ----------------
+
+        message = data.get('message')
+
+        if not message:
+            return
+
+        saved_message = await self.save_message(
+            user,
+            self.room_id,
+            message
+        )
+
+        await self.send_message_notification(saved_message)
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': message,
+                'sender': user.username,
+                'timestamp': str(saved_message.timestamp),
+                'msg_id': saved_message.id,
             }
         )
         
-    async def chat_message(self,event):# event : dict send by group_send()
-        await self.send(text_data=json.dumps({ #send : send that into specific phone
-            'message':event['message'],
-            'sender':event['sender'],
-            'timestamp':event['timestamp'],
-            'msg_id':event['msg_id'],
+    async def chat_message(self, event):
+        await self.mark_as_delivered(event['msg_id'])
+
+        await self.send(text_data=json.dumps({
+            'type': 'message',           # ← add type so frontend can distinguish
+            'message': event['message'],
+            'sender': event['sender'],
+            'timestamp': event['timestamp'],
+            'msg_id': event['msg_id'],
+            'is_delivered': True,        # ← frontend shows ✓
+            'is_read': False,            # ← frontend shows ✓✓ only after seen event
+        })) 
+        
+    async def message_seen(self, event):
+
+        await self.send(text_data=json.dumps({
+            'type': 'seen',
+            'message_id': event['message_id']
         }))
+    
+    
+    
+
+
+    @database_sync_to_async
+    def mark_message_seen(self, message_id):
+        msg = Message.objects.get(id=message_id)
+        if self.user != msg.sender:
+            msg.is_read = True          # ← was is_seen (doesn't exist in your DB)
+            msg.read_at = timezone.now() # ← was seen_at (doesn't exist in your DB)
+            msg.save()
+    
+    
+    
+    @database_sync_to_async
+    def mark_as_delivered(self, msg_id):
+        msg = Message.objects.get(id=msg_id)
+        # Only the receiver should trigger delivered, not the sender themselves
+        if self.user != msg.sender:
+            msg.is_delivered = True
+            msg.save()
+    
+    
     
     @database_sync_to_async
     def check_participent(self,user,room_id):
@@ -127,6 +193,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
             room=room,
             sender=user,
             content=content
+        )
+    
+    @database_sync_to_async
+    def send_message_notification(self, message_obj):
+
+        room = message_obj.room
+
+        receiver = room.participants.exclude(
+            id=message_obj.sender.id
+        ).first()
+
+        create_notification(
+            sender=message_obj.sender,
+            receiver=receiver,
+            notification_type='MESSAGE',
+            title='New Message',
+            message=message_obj.content,
+            redirect_url='/chat/'
         )
         
 

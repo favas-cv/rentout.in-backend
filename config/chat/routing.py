@@ -14,4 +14,4 @@ websocket_urlpatterns = [
         # .as_asgi() is like .as_view() for class-based views
         # it wraps the consumer so Channels knows how to call it
     ),
-]
+] 

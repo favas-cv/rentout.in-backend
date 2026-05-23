@@ -52,18 +52,125 @@ the ownerdashboard is setuped , the orders ,dash cards , and  products listed
 
 also sentuped the otp verification system ,and that working ,
 
-23-03-26
+23-04-26
 
 also do the password reset by same otp stystem , used reset token and sessionref 
 
 the manage profile is finshed , profile pic ulpoad and editr profile is ok  
 
 
+27-04-26
+
+setuped the websocket for realtime chating ,
+created routing,consumer , and middleware for protect the routing,
+in routing give access token and retrive the user from that ,so can give 
+authorization .
+
+also setuped frontend for chating , and chating histery , in backend send desc and in fronedvd reverse
+
+and give also used pagination setup 
+and also get soo mnay bugs in accept reject section in there used if logggeduser and reciver is same
+then update api can call like
+also connected ai chatbot to frontend and that is workign goodd
+
+then i need to setup the scrolldwon and fetch like whatsapp in very smooth type needed 
+after the chat is finish and then need setup other apis to forntedn  
+
+
+29-04-26
+also have the last day penign   items , an today is setuped the basic frotnend and total amout logics but ,
+problm the api structure , so curent , cart check and reserve only after the amout calcution , but noy good beacuase 
+in frotnend after reservation see is not go,
+so for that i need to change the check availblity api also add the price section in the days count and 
+sent into front so in there can use the reservation dn booking lik thatso after this finish we can move to 
+other setup and all things
+
+also have the message to cache and like setup , and other 
+ 
+01-05-26
+
+i setuped the amount calculating ,and also connected the razorpay into frontend 
+in amount i created an fn for calculate by items , so whn availbility checking it will alsocalclulate the amount 
+and show the total in fortnen , in reserv ation also call this fn  and getand booking will store etc..
+
+do the razorpay that is working , and also order creating ,
+
+in frotned setuped the profile section edit , pic . 
+the admin dhasboard setuped , and user can see its rentals , and it getted orders 
+its products etc..
+
+then i need tos etup the cache to the chat , and also do some other chat section,
+and the main frotnedn room setup also 
+
+02-05-26
+
+today i setuped the owner can update the status of its getted orders and also user can cancell its own rentals 
+
+also connected to frontend ,
+setuped the chat history and pagination chnaged to sursor so now simply like whats ,
+
+
+13-5-26
+
+today setuped the push messsages in firebase , created accpounts and get credentials , and make backendnand also frontend , that is working , 
+
+
+14-07-26
+
+today i chnaged the aichatbot into an separate service with fast api , then when inctead calling ask()
+in django call the url of fast api , so its very fast and very good , 
+after this i deleted the langchain setups so that time its very fast runing my server 
+
+also setuped the AR for room , that is working in phone but some problem is in lap
+for phon i used ngrok , thats working , the local porducts is wrking ,in phone , 
+but url models idont bcz it need to host https 
+
+15-07-26
+
+today mainly setuped the firebass notifiation , and gived the fn in all places , worked but after i connecte to websocket 
+it broken ,and also in booking section the filter is chnaged and added select update for locking , 
+
+then i setuped the chat tick setuped , but now have so mnay problems i dont knwo what to do 
+
+
+16-05-26
+
+attended the 3rd week review ,  tell me more study about the firebase , model viewer,llm , rag  working
+and other details so it will good , and now the basic feautures completed then need some froned bugs setups , 
+also ened to set the 3d models, bookingsetup , logistics setup etc..,
+
+websocket tick , seen problem 
+notification setup
+access expire setup
+kyc setup change into manual validation,
+
+study the fastapi framework , langchain also
+
+
+then start the hosting part , docker k3s etc...
 
 
 
+21-5-26
+
+setuped an admin dashboard , and created froenend and the kyc status chnaging
+api created and gived in frotend ,
+the products active , trending , like changing api is created and also added the email fn 
+in users added is active and admin can block users that api created 
+
+also connected to frontend , so
+
+---------> i feel nextday i cn start the deploy stage i feel !
 
 
-to do after making frontend::
-now the payment is needed , razorpay installed and id settuped ,
-then the payment order creation adn  order creation needed 
+22-5-26
+
+now created permissions for active users and that items , and also gived for apis 
+so actve can use all features , others can use some apis , so created and aso modified the reservation items , 
+and in forntend also done 
+
+
+when start deployment i dont know ! ! !
+
+then i need to setup the frotnend setups , reffresh like items 
+also the    ROOM IS TO DO MAINLY

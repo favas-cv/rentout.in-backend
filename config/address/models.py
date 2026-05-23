@@ -20,7 +20,7 @@ class Address(TimeStampedModel):
     phone = models.CharField(max_length=12,blank=True,null=True)
     is_default =models.BooleanField(default=True)
     
-
+ 
     
     
     

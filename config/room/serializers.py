@@ -6,7 +6,7 @@ class RoomProductSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
     class Meta:
         model =RoomProduct
-        fields=['product']
+        fields=['id','product']
         
 
         
@@ -22,4 +22,4 @@ class RoomSerializer(serializers.ModelSerializer):
         
 class AddProductSerializer(serializers.Serializer):
     product =serializers.IntegerField()
-  
+   
